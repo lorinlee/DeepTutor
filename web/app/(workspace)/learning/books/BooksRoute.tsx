@@ -1024,7 +1024,7 @@ function BookPageInner() {
           <BookCrumb id={openBook.id} label={openBook.title || t('Untitled book')} />
         </div>
       )}
-      <div className="flex min-h-0 min-w-0 flex-1">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row">
       {displayView !== 'list' && displayView !== 'creator' && displayView !== 'opening' && (
         <BookSidebar
           book={detail?.book || pendingBook || null}

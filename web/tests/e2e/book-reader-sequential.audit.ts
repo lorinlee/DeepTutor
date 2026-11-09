@@ -217,6 +217,19 @@ test("book arrows read the current chapter before turning chapters", async ({
     page.getByRole("heading", { name: "Current long chapter" }),
   ).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
+  const chapters = page.getByRole("button", { name: "Chapters", exact: true });
+  await expect(chapters).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("button", { name: "Expand chapters" })).toBeHidden();
+  const heading = page.getByRole("heading", { name: "Current long chapter" });
+  expect((await heading.boundingBox())?.width).toBeGreaterThan(240);
+  await chapters.click();
+  await expect(chapters).toHaveAttribute("aria-expanded", "true");
+  await page.getByRole("button", { name: "Next chapter", exact: true }).click();
+  await expect(chapters).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("heading", { name: "Next chapter" })).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 568 });
+  expect((await reader.boundingBox())?.height).toBeGreaterThan(100);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   await expect(page.locator(".dt-crumb.is-instance").filter({ hasText: book.title })).toBeInViewport();
   expect(await reader.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);

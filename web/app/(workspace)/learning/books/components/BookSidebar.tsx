@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   ArrowLeft,
   Bookmark,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Compass,
@@ -77,6 +78,8 @@ export default function BookSidebar({
 }: BookSidebarProps) {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
+  const [chaptersOpen, setChaptersOpen] = useState(false);
+  const chaptersId = useId();
   const [confirmRebuild, setConfirmRebuild] = useState(false);
 
   // Destructive controls forget: an armed state that outlives the interaction
@@ -87,9 +90,21 @@ export default function BookSidebar({
     return () => clearTimeout(timer);
   }, [confirmRebuild]);
 
-  if (collapsed) {
-    return (
-      <aside className="flex h-full w-14 flex-col items-center gap-3 bg-[rgb(var(--dt-ink,55_53_47)/0.022)] px-2 py-4">
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setChaptersOpen(open => !open)}
+        aria-expanded={chaptersOpen}
+        aria-controls={chaptersId}
+        className="flex min-h-11 shrink-0 items-center justify-between border-b border-[var(--border)] px-4 text-sm font-medium lg:hidden"
+      >
+        {t("Chapters")}
+        <ChevronDown className={`h-4 w-4 ${chaptersOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {collapsed && (
+      <aside className="hidden h-full w-14 shrink-0 lg:flex flex-col items-center gap-3 bg-[rgb(var(--dt-ink,55_53_47)/0.022)] px-2 py-4">
         <Tooltip label={t("All books")}>
           <button
             onClick={onBackToLibrary}
@@ -134,11 +149,12 @@ export default function BookSidebar({
           })}
         </div>
       </aside>
-    );
-  }
+      )}
 
-  return (
-    <aside className="flex h-full w-[232px] flex-col gap-3 bg-[rgb(var(--dt-ink,55_53_47)/0.022)] px-3 py-4">
+      <aside
+        id={chaptersId}
+        className={`${chaptersOpen ? "flex" : "hidden"} ${collapsed ? "lg:hidden" : "lg:flex"} max-h-[40dvh] w-full shrink-0 flex-col gap-3 overflow-y-auto bg-[rgb(var(--dt-ink,55_53_47)/0.022)] px-3 py-4 lg:h-full lg:max-h-none lg:w-[232px] lg:overflow-hidden`}
+      >
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={onBackToLibrary}
@@ -148,9 +164,10 @@ export default function BookSidebar({
         </button>
         <Tooltip label={t("Collapse chapters")}>
           <button
+            type="button"
             onClick={() => setCollapsed(true)}
             aria-label={t("Collapse chapters")}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)]/40 hover:text-[var(--foreground)]"
+            className="hidden h-7 w-7 items-center lg:inline-flex justify-center rounded-md text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)]/40 hover:text-[var(--foreground)]"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
@@ -227,7 +244,7 @@ export default function BookSidebar({
         </div>
       )}
 
-      <section className="flex-1 overflow-y-auto">
+      <section className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         {pages.length === 0 ? (
           <div className="rounded-xl bg-[var(--background)] px-3 py-3 text-xs text-[var(--muted-foreground)]">
             {t("Pages will appear here once the spine is confirmed.")}
@@ -253,7 +270,10 @@ export default function BookSidebar({
                   <li key={page.id} className="[&>span]:w-full">
                     <Tooltip label={hint}>
                       <button
-                      onClick={() => onSelectPage?.(page.id)}
+                      onClick={() => {
+                        setChaptersOpen(false);
+                        onSelectPage?.(page.id);
+                      }}
                       className={`flex w-full items-start justify-between gap-2 rounded-md py-1.5 pr-2 text-left text-xs ${
                         page.parent_page_id ? "pl-5" : "pl-2"
                       } ${
@@ -302,6 +322,7 @@ export default function BookSidebar({
           </>
         )}
       </section>
-    </aside>
+      </aside>
+    </>
   );
 }

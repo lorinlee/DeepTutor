@@ -461,16 +461,16 @@ export default function PageReader({
     <div className="relative flex h-full flex-col">
       <header
         className={[
-          "bg-[var(--background)] transition-all duration-200 ease-out",
-          headerCollapsed ? "px-8 py-2" : "px-8 py-5",
+          "max-h-[42dvh] shrink-0 overflow-y-auto bg-[var(--background)] transition-all duration-200 ease-out lg:max-h-none lg:overflow-visible",
+          headerCollapsed ? "px-4 py-2 lg:px-8" : "px-4 py-3 lg:px-8 lg:py-5",
         ].join(" ")}
       >
-        <div className="mx-auto flex w-full max-w-[78ch] items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
+        <div className={`mx-auto flex w-full max-w-[78ch] items-start justify-between gap-3 ${headerCollapsed ? "" : "max-lg:flex-col"}`}>
+          <div className={`min-w-0 flex-1 ${headerCollapsed ? "" : "max-lg:self-stretch"}`}>
             <h1
               className={[
                 "font-semibold leading-tight tracking-tight text-[var(--foreground)] transition-all duration-200",
-                headerCollapsed ? "truncate text-[15px]" : "text-[26px]",
+                headerCollapsed ? "truncate text-[15px]" : "break-words text-xl lg:text-[26px]",
               ].join(" ")}
               title={page.title || t("Untitled chapter")}
             >
@@ -484,7 +484,7 @@ export default function PageReader({
               </ul>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2">
             {!headerCollapsed && (
               <span className="rounded-full bg-[var(--muted)] px-2.5 py-0.5 text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">
                 {t(page.status)}
@@ -551,7 +551,7 @@ export default function PageReader({
       <div
         ref={setScrollContainer}
         data-testid="chapter-scroll-container"
-        className="flex-1 overflow-y-auto px-8 py-8"
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 lg:px-8 lg:py-8"
       >
         {(writing || hydrating) && page.blocks.length === 0 ? (
           <div className="mx-auto w-full max-w-[78ch]">
@@ -732,7 +732,7 @@ export default function PageReader({
       </div>
 
       {(previousPage || nextPage) && onNavigate && (
-        <footer className="bg-[var(--background)] px-8 pb-3 pt-1">
+        <footer className="bg-[var(--background)] px-2 pb-3 pt-1 lg:px-8">
           <div className="mx-auto flex w-full max-w-[78ch] items-center justify-between gap-3">
             <NavButton
               page={previousPage}
@@ -741,7 +741,7 @@ export default function PageReader({
               onNavigate={onNavigate}
             />
             <div className="flex min-w-0 shrink-0 flex-col items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]/70">
+              <span className="hidden text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]/70 lg:inline">
                 {t("← / → to turn pages")}
               </span>
               {chapterHasScroll && (
@@ -753,7 +753,7 @@ export default function PageReader({
                   </span>
                   <progress
                     data-testid="chapter-progress"
-                    className="h-1.5 w-24 accent-[var(--primary)]"
+                    className="hidden h-1.5 w-24 accent-[var(--primary)] lg:block"
                     max={100}
                     value={readingPercent}
                     aria-label={t("Chapter progress: {{percent}}%", {
