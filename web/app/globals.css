@@ -443,6 +443,18 @@
   @apply font-serif text-[16px];
 }
 
+/* Use the platform reading font for book prose. Code and math retain their
+   own font rules so their spacing and glyphs stay intact. */
+[data-testid="chapter-scroll-container"] .prose {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", system-ui, sans-serif;
+  font-weight: 400;
+}
+
+[data-testid="chapter-scroll-container"] .prose :is(h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+  font-weight: 600;
+}
+
 .prose pre {
   @apply rounded-lg p-4 overflow-x-auto my-4;
   background: #292524;
